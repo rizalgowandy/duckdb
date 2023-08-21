@@ -18,7 +18,7 @@ public:
 	                   FileLockType lock_type = FileLockType::READ_LOCK, optional_ptr<FileOpener> opener = nullptr);
 
 	FileSystem &fs;
-	unique_ptr<data_t[]> data;
+	unsafe_unique_array<data_t> data;
 	idx_t offset;
 	idx_t read_data;
 	unique_ptr<FileHandle> handle;
@@ -37,14 +37,10 @@ public:
 
 	ClientContext &GetContext() override;
 
-	optional_ptr<Catalog> GetCatalog() override;
-	void SetCatalog(Catalog &catalog);
-
 private:
 	idx_t file_size;
 	idx_t total_read;
 	optional_ptr<ClientContext> context;
-	optional_ptr<Catalog> catalog;
 };
 
 } // namespace duckdb

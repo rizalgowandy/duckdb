@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "duckdb/common/vector.hpp"
+#include "duckdb/common/arrow/arrow.hpp"
 
 using duckdb::vector;
 
@@ -165,6 +166,7 @@ public:
 	Napi::Value Run(const Napi::CallbackInfo &info);
 	Napi::Value Finish(const Napi::CallbackInfo &info);
 	Napi::Value Stream(const Napi::CallbackInfo &info);
+	Napi::Value Columns(const Napi::CallbackInfo &info);
 
 public:
 	static Napi::FunctionReference constructor;

@@ -16,7 +16,11 @@
 namespace duckdb {
 
 struct AttachInfo : public ParseInfo {
-	AttachInfo() {
+public:
+	static constexpr const ParseInfoType TYPE = ParseInfoType::ATTACH_INFO;
+
+public:
+	AttachInfo() : ParseInfo(TYPE) {
 	}
 
 	//! The alias of the attached database
@@ -27,13 +31,13 @@ struct AttachInfo : public ParseInfo {
 	unordered_map<string, Value> options;
 
 public:
-	unique_ptr<AttachInfo> Copy() const {
-		auto result = make_uniq<AttachInfo>();
-		result->name = name;
-		result->path = path;
-		result->options = options;
-		return result;
-	}
+	unique_ptr<AttachInfo> Copy() const;
+
+	void Serialize(Serializer &serializer) const;
+	static unique_ptr<ParseInfo> Deserialize(Deserializer &deserializer);
+
+	void FormatSerialize(FormatSerializer &serializer) const override;
+	static unique_ptr<ParseInfo> FormatDeserialize(FormatDeserializer &deserializer);
 };
 
 } // namespace duckdb

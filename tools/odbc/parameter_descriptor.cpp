@@ -171,7 +171,7 @@ SQLRETURN ParameterDescriptor::FillParamCharDataBuffer(DescRecord &apd_record, D
 	size_t offset = 0;
 	auto sql_ind_ptr = GetSQLDescIndicatorPtr(apd_record);
 	if (*sql_ind_ptr == SQL_DATA_AT_EXEC) {
-		pool_allocated_ptr.emplace_back(duckdb::unique_ptr<char[]>(new char[ipd_record.sql_desc_length]));
+		pool_allocated_ptr.emplace_back(duckdb::make_unsafe_uniq_array<char>(ipd_record.sql_desc_length));
 		SetSQLDescDataPtr(apd_record, pool_allocated_ptr.back().get());
 		*sql_ind_ptr = 0;
 	} else {
@@ -203,7 +203,7 @@ SQLRETURN ParameterDescriptor::FillCurParamCharSet(DescRecord &apd_record, DescR
 
 	if (*len_ptr == SQL_DATA_AT_EXEC && pool_allocated_ptr.empty()) {
 		auto alloc_size = col_size * cur_apd->header.sql_desc_array_size;
-		pool_allocated_ptr.emplace_back(duckdb::unique_ptr<char[]>(new char[alloc_size]));
+		pool_allocated_ptr.emplace_back(duckdb::make_unsafe_uniq_array<char>(alloc_size));
 		SetSQLDescDataPtr(apd_record, pool_allocated_ptr.back().get());
 	}
 
@@ -417,14 +417,6 @@ SQLLEN *ParameterDescriptor::GetSQLDescIndicatorPtr(DescRecord &apd_record, idx_
 	return apd_record.sql_desc_indicator_ptr + set_idx;
 }
 
-void ParameterDescriptor::SetSQLDescIndicatorPtr(DescRecord &apd_record, SQLLEN *ind_ptr) {
-	auto sql_ind_ptr = apd_record.sql_desc_indicator_ptr;
-	if (cur_apd->header.sql_desc_bind_offset_ptr) {
-		sql_ind_ptr += *cur_apd->header.sql_desc_bind_offset_ptr;
-	}
-	sql_ind_ptr = ind_ptr;
-}
-
 void ParameterDescriptor::SetSQLDescIndicatorPtr(DescRecord &apd_record, SQLLEN value) {
 	auto sql_ind_ptr = apd_record.sql_desc_indicator_ptr;
 	if (cur_apd->header.sql_desc_bind_offset_ptr) {
@@ -438,12 +430,4 @@ SQLLEN *ParameterDescriptor::GetSQLDescOctetLengthPtr(DescRecord &apd_record, id
 		return apd_record.sql_desc_octet_length_ptr + set_idx + *cur_apd->header.sql_desc_bind_offset_ptr;
 	}
 	return apd_record.sql_desc_octet_length_ptr + set_idx;
-}
-
-void ParameterDescriptor::SetSQLDescOctetLengthPtr(DescRecord &apd_record, SQLLEN *len_ptr) {
-	auto sql_len_ptr = apd_record.sql_desc_octet_length_ptr;
-	if (cur_apd->header.sql_desc_bind_offset_ptr) {
-		sql_len_ptr += *cur_apd->header.sql_desc_bind_offset_ptr;
-	}
-	sql_len_ptr = len_ptr;
 }

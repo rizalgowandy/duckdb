@@ -10,6 +10,8 @@
 
 #include "duckdb/common/adbc/adbc.h"
 
+#include <string>
+
 namespace duckdb_adbc {
 
 AdbcStatusCode DatabaseNew(struct AdbcDatabase *database, struct AdbcError *error);
@@ -81,5 +83,11 @@ AdbcStatusCode StatementSetOption(struct AdbcStatement *statement, const char *k
 AdbcStatusCode StatementExecutePartitions(struct AdbcStatement *statement, struct ArrowSchema *schema,
                                           struct AdbcPartitions *partitions, int64_t *rows_affected,
                                           struct AdbcError *error);
+
+//! This method should only be called when the string is guaranteed to not be NULL
+void SetError(struct AdbcError *error, const std::string &message);
+void SetError(struct AdbcError *error, const char *message);
+
+void InitializeADBCError(AdbcError *error);
 
 } // namespace duckdb_adbc

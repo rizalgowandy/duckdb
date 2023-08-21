@@ -15,16 +15,15 @@
 #include "duckdb/common/typedefs.hpp"
 
 namespace duckdb {
+class Serializer;
+class Deserializer;
+class FormatSerializer;
+class FormatDeserializer;
 
 //! inline std directives that we use frequently
 #ifndef DUCKDB_DEBUG_MOVE
 using std::move;
 #endif
-
-// template <class _Tp, class _Dp = std::default_delete<_Tp>>
-// class unique_ptr;
-
-// using data_ptr = unique_ptr<char[]>;
 
 // NOTE: there is a copy of this in the Postgres' parser grammar (gram.y)
 #define DEFAULT_SCHEMA  "main"
@@ -42,6 +41,8 @@ DUCKDB_API bool IsRowIdColumnId(column_t column_id);
 
 //! The maximum row identifier used in tables
 extern const row_t MAX_ROW_ID;
+//! Transaction-local row IDs start at MAX_ROW_ID
+extern const row_t MAX_ROW_ID_LOCAL;
 
 extern const transaction_t TRANSACTION_ID_START;
 extern const transaction_t MAX_TRANSACTION_ID;
